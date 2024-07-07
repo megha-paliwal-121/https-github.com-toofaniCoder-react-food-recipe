@@ -21,10 +21,10 @@ jobs:
       - attach_workspace:
           at: my_workspace
       - run: |
-          if [[$(cat my_workspace/echo-output) == "trying out my_workspace"]]; then
+          if [[ $(cat /my_workspace/echo-output) == "trying out workspaces" ]]; then
             echo "It worked!";
           else
-            echo "nope!"; exit 1
+            echo "nope!"; exit 1;
           fi
 workflows: 
   version: 2
@@ -34,3 +34,4 @@ workflows:
       - two:
           requires:
             - one
+          
