@@ -19,7 +19,7 @@ jobs:
       - checkout
       - run: echo "a more familiar hello"
       - attach_workspace:
-          at: my_workspace
+          at: /my_workspace
       - run: |
           if [[ $(cat /my_workspace/echo-output) == "trying out workspaces" ]]; then
             echo "It worked!";
