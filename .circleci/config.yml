@@ -1,41 +1,25 @@
 version: 2.1
-orbs:
-  node: circleci/node@5.0.2
-  heroku: circleci/heroku@1.2.6
+
+executors:
+  docker-executor:
+    machine:
+      image: ubuntu-2204:2022.04.2
 
 jobs:
-  build_and_test:
-    executor: node/default
+  build:
+    executor: docker-executor
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-      - run:
-          command: yarn test
-          name: Run tests
-      - run:
-          command: yarn build
-          name: Build app
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .
+      - run: |
+          echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+          
+      - run: docker build -t company/app:$CIRCLE_BRANCH .
 
-  deploy: # this can be any name you choose
-    executor: heroku/default
-    steps:
-      - attach_workspace:
-          at: ~/project
-      - heroku/deploy-via-git:
-          force: true # force push when pushing to the heroku remote, see: https://devcenter.heroku.com/articles/git
-
+      - run: docker push company/app:$CIRCLE_BRANCH
+    
 workflows:
-  test_my_app:
+  version: 2
+  build_and_push:
     jobs:
-      - build_and_test
-      - deploy:
-          requires:
-            - build_and_test # only deploy if the build_and_test job has completed
-          filters:
-            branches:
-              only: main # only deploy when on main
+      - build
+
