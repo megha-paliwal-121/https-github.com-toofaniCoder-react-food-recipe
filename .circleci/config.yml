@@ -14,9 +14,9 @@ jobs:
       - run: |
           echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           
-      - run: docker build -t nodeapp:${TAG:-latest} .
+      - run: docker build -t nodeapp:latest .
 
-      - run: docker push $DOCKERHUB_USERNAME/nodeapp:$TAG
+      - run: docker push $DOCKERHUB_USERNAME/nodeapp:latest
     
 workflows:
   version: 2
