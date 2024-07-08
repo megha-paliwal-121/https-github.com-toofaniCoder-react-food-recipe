@@ -1,30 +1,68 @@
+[2:29 AM] Yash Singh
 version: 2.1
-
+ 
 executors:
+
   docker-executor:
+
     docker:
+
       - image: cimg/base:2022.09
-
+ 
 jobs:
-  build:
-    executor: docker-executor
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: |
-          echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
-      - run:
-          name: Build Docker Image
-          command: docker build -t nodeapp:latest .
-      - run:
-          name: List Docker Images
-          command: docker images
-      - run:
-          name: Push Docker Image
-          command: docker push $DOCKERHUB_USERNAME/nodeapp:latest
 
+  build:
+
+    executor: docker-executor
+
+    steps:
+
+      - checkout
+
+      - setup_remote_docker:
+
+          docker_layer_caching: true
+
+      - run:
+
+          name: Docker Login
+
+          command: |
+
+            echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+
+            docker info
+
+      - run:
+
+          name: Build Docker Image
+
+          command: docker build -t nodeapp:latest .
+
+      - run:
+
+          name: List Docker Images
+
+          command: docker images
+
+      - run:
+
+          name: Verify Image Exists
+
+          command: docker inspect nodeapp:latest
+
+      - run:
+
+          name: Push Docker Image
+
+          command: docker push $DOCKERHUB_USERNAME/nodeapp:latest
+ 
 workflows:
+
   build_and_push:
+
     jobs:
+
       - build
+
+ 
