@@ -10,12 +10,14 @@ jobs:
     executor: docker-executor
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run: |
           echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
           
-      - run: docker build -t company/app:$CIRCLE_BRANCH .
+      - run: docker build -t nodeapp .
 
-      - run: docker push company/app:$CIRCLE_BRANCH
+      - run: docker push nodeapp
     
 workflows:
   version: 2
