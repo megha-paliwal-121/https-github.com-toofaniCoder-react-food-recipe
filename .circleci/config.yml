@@ -16,7 +16,7 @@ jobs:
           
       - run: docker build -t nodeapp .
 
-      - run: docker push nodeapp
+      - run: docker push $DOCKERHUB_USERNAME/nodeapp:$TAG
     
 workflows:
   version: 2
