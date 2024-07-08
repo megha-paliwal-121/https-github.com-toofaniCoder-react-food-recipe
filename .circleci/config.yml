@@ -1,27 +1,30 @@
-version: 2.1 #defining version 
-#defining the workflow as pipeline can contain many workflow 
-# test-deploy is the name of workflow
-#then we are defining the job which we want to run
-workflows:
-  test-deploy:
-    jobs:
-      - test
-# now we will create the jobs
-#test is the name of job
-#docker is the enviroment for runing application
-#we are using image 0f node which is already present on cicleci developer
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/base:2022.09
 
 jobs:
-  test: 
-    docker:
-      - image: cimg/node:17.2.0
+  build:
+    executor: docker-executor
     steps:
       - checkout
-    #  - run: node --version
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
       - run:
-          name: install dependencies
-          command: npm install
+          name: Build Docker Image
+          command: docker build -t nodeapp:latest .
       - run:
-           name: Run test
-           command: npm run test
+          name: List Docker Images
+          command: docker images
+      - run:
+          name: Push Docker Image
+          command: docker push $DOCKERHUB_USERNAME/nodeapp:latest
 
+workflows:
+  build_and_push:
+    jobs:
+      - build
