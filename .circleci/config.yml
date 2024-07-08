@@ -40,21 +40,29 @@ jobs:
 
       - run:
 
+          name: Tag Docker Image
+
+          command: docker tag nodeapp:latest $DOCKERHUB_USERNAME/nodeapp:latest
+
+      - run:
+
           name: List Docker Images
 
           command: docker images
 
       - run:
 
-          name: Verify Image Exists
-
-          command: docker inspect nodeapp:latest
-
-      - run:
-
           name: Push Docker Image
 
-          command: docker push $DOCKERHUB_USERNAME/nodeapp:latest
+          command: |
+
+            docker push $DOCKERHUB_USERNAME/nodeapp:latest || {
+
+              echo "Docker push failed"
+
+              exit 1
+
+            }
  
 workflows:
 
@@ -63,5 +71,4 @@ workflows:
     jobs:
 
       - build
-
  
